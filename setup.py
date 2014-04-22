@@ -2,7 +2,7 @@ from distutils.core import setup
 from submarine import __version__
 
 setup(
-    name='Submarine',
+    name='submarine',
     version=__version__,
     author='Jongho Lee',
     author_email='jhlee@tntcrowd.com',
