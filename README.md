@@ -3,7 +3,10 @@
 * Python 2 / 3 compatible subtitle converter.
 * Converts SubRip style subtitles to a WEBVTT format.
 
-Requires Python 2.7.x / 3.3.x or later. 
+##Requirements
+
+* Python 2.7.x / 3.3.x or later. 
+* chardet 2.2.1 or later.
 
 ##Installation
 

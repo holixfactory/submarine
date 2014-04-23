@@ -1,8 +1,11 @@
+# -*- coding: UTF-8 -*-
+
 from __future__ import division, unicode_literals
 import sys
 import re
 import os
 import chardet # For non-Unicode encoding detection
+import pdb
 
 def parser(file, path):
     ext = path.rfind(".")
@@ -25,7 +28,7 @@ def parser(file, path):
         smi_obj = re.sub('(<br>)+', '\n', smi_obj)
         # Convert ms into timestamp
 
-    elif first_line[:2] == '1\n' or first_line[1:3] == '1\n':
+    elif first_line[:2] == '1\n' or first_line[:2] == '1\r' or first_line[1:3] == '1\n' or first_line[1:3] == '1\r':
         srt_obj = sbt_obj
         # Convert the timestamp format
         org_ts = re.findall('(\d{0,2}?:\d{0,2}?:\d{0,2}?,)+', srt_obj)
