@@ -5,14 +5,18 @@
 
 ##Requirements
 
-* Python 2.7.x / 3.3.x or later. 
-* chardet 2.2.1 or later.
+* Python 2.7.x / 3.3.x or later (Will probably work on 2.6.x and 3.2.x)  
+* chardet 2.2.1 or later
 
 ##Installation
 
-Install using `pip`...
+First, you'll need to install `chardet`,
+	
+	pip install chardet
 
-    pip install submarine
+Then, install using `pip`...
+
+	pip install submarine
 
 
 ##Commandline Usage
