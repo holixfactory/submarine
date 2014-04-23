@@ -37,7 +37,6 @@ def parser(file, path):
         start = 0
         end = 1
         converted_ts = []
-        pdb.set_trace()
         for ts_el in ts_list:
             ts_el = ts_list[start] + " --> " + ts_list[end]
             converted_ts.append(ts_el)
@@ -45,6 +44,13 @@ def parser(file, path):
             end += 2
         # Replace '<br>' with '\n'
         smi_obj = re.sub('(<br>)+', '\n', smi_obj)
+        # Delete all tags
+        smi_obj = re.sub('<(.*)>','', smi_obj)
+        # Delete &nbsp;
+        smi_obj = re.sub('&nbsp;','', smi_obj)
+        # Delete all other unnecessary parts
+        smi_obj = re.sub('((.|\n)*)-->','', smi_obj)
+
 
     elif first_line[:2] == '1\n' or first_line[:2] == '1\r' or first_line[1:3] == '1\n' or first_line[1:3] == '1\r':
         srt_obj = sbt_obj
