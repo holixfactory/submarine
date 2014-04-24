@@ -3,14 +3,20 @@
 from __future__ import division, unicode_literals
 import sys
 import re
-import os
-import chardet # For non-Unicode encoding detection
-import pdb
+import codecs
+import chardet # For non-unicode encoding detection
 
-def parser(file, path):
-    ext = path.rfind(".")
-    converted_path = path[:ext]+".vtt"
-    sbt_obj = file.read()
+def parser(path_in, path_out):
+    file = open(path_in, "rb")
+    chdt = chardet.detect(file.read())
+    if chdt['encoding'] != "utf-8" or chdt['encoding'] != "ascii":
+        file.close()
+        file = codecs.open(path_in, "r", encoding=chdt['encoding'])
+        sbt_obj = file.read()
+    else:
+        file.close()
+        file = open(path_in, 'r')
+        sbt_obj = file.read()
     first_line = sbt_obj
     file.close()
     if first_line[:6] == '<SAMI>' or first_line[1:7] == '<SAMI>':
@@ -66,16 +72,15 @@ def parser(file, path):
                 final_obj = final_obj + str(que) +'\n' + converted_ts[num] + '\n' + converted_ct[num] + '\n\n'
             que += 1
             num += 1
-        with open(converted_path, "w") as converted:
+        if sys.version_info <= (2,8):
+            final_obj = unicode(final_obj).encode("utf-8")
+        with open(path_out, "w") as converted:
             converted.write(final_obj)
         if converted:
             converted.close()
             print("Successfully converted the subtitle!")
-
-
-
     elif first_line[:2] == '1\n' or first_line[:2] == '1\r' \
-    or first_line[1:3] == '1\n' or first_line[1:3] == '1\r':
+        or first_line[1:3] == '1\n' or first_line[1:3] == '1\r':
         srt_obj = sbt_obj
         # Convert the timestamp format
         org_ts = re.findall('(\d{0,2}?:\d{0,2}?:\d{0,2}?,)+', srt_obj)
@@ -91,11 +96,10 @@ def parser(file, path):
         srt_obj = header + srt_obj
         if sys.version_info <= (2,8):
             srt_obj = unicode(srt_obj).encode("utf-8")
-        with open(converted_path, "w") as converted:
+        with open(path_out, "w") as converted:
             converted.write(srt_obj)
         if converted:
             converted.close()
             print("Successfully converted the subtitle!")
-
     else:
         print("Not a valid SAMI or SubRip file!")

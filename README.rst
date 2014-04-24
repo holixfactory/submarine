@@ -26,10 +26,12 @@ Then, install from `PyPI <https://pypi.python.org/pypi/submarine>`_ via `pip`::
 Commandline Usage
 -----------------
 
-In any shell or ternminal emulator::
+In any shell or terminal emulator::
 
-    submarine filename.srt
-    submarine filename.smi
+    submarine filename.srt path_to_file.vtt
+    submarine filename.smi path_to_file.vtt
+
+If no path_to_file is given, output directory will be the origin of source file.
 
 License
 -------
