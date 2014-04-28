@@ -14,11 +14,11 @@ Requirements
 Installation
 ------------
 
-First, you'll need to install `chardet`::
+First, you'll need to install ``chardet``::
 	
 	pip install chardet
 
-Then, install from `PyPI <https://pypi.python.org/pypi/submarine>`_ via `pip`::
+Then, install from `PyPI <https://pypi.python.org/pypi/submarine>`_ via ``pip``::
 
 	pip install submarine
 

@@ -3,10 +3,14 @@
 from __future__ import division, unicode_literals
 import sys
 import re
+import os
 import codecs
 import chardet # For non-unicode encoding detection
 
 def parser(path_in, path_out):
+    if not os.path.exists(path_in):
+        sys.stderr.write('File does not exist! Please check the directory.\n')
+        return False
     file = open(path_in, "rb")
     chdt = chardet.detect(file.read())
     if chdt['encoding'] != "utf-8" or chdt['encoding'] != "ascii":
@@ -17,26 +21,56 @@ def parser(path_in, path_out):
         file.close()
         file = open(path_in, 'r')
         sbt_obj = file.read()
-    first_line = sbt_obj
+    first_line = sbt_obj[:10]
     file.close()
-    if first_line[:6] == '<SAMI>' or first_line[1:7] == '<SAMI>':
+    if first_line.find('<SAMI>') != -1:
         smi_obj = sbt_obj
-        # Create ms list
-        ms_list = re.findall('=\d+',smi_obj)
-        # Convert ms into timestamp
+        # Match ms pair
+        ms_chk = re.findall('(<sync start=\d+><p class=\w+>(\s|\S){3,255}?(\s))'\
+            ,smi_obj, flags=re.IGNORECASE)
+        g = 0
+        ms_list = []
+        if ms_chk[g][0].find('&nbsp;') != -1:
+            g += 1
+        while g < len(ms_chk):
+            if g != len(ms_chk) - 1:
+                first = ms_chk[g][0].find('&nbsp;')
+                second = ms_chk[g + 1][0].find('&nbsp;')
+                if first == -1 and second != -1:
+                    first_search = re.search('=\d+',ms_chk[g][0])
+                    second_search = re.search('=\d+',ms_chk[g + 1][0])
+                    ms_list.append(first_search.group(0))
+                    ms_list.append(second_search.group(0))
+                    g += 2
+                elif first == -1 and second == -1:
+                    first_search = re.search('=\d+',ms_chk[g][0])
+                    second_search = re.search('=\d+',ms_chk[g + 1][0])
+                    ms_list.append(first_search.group(0))
+                    ms_list.append(second_search.group(0))
+                    g += 1
+            elif g == len(ms_chk) - 1:
+                first_search = re.search('=\d+',ms_chk[g][0])
+                ms_list.append(first_search.group(0))
+                g += 1
         ms_list = [a.replace('=','') for a in ms_list]
-        ms_list = [int(b) for b in ms_list]
+        # Check if last subtitle has an end
+        chk_pair = len(ms_list) % 2
+        if chk_pair != 0:
+            last_ms = ms_list[len(ms_list) - 1]
+            last_ms = int(last_ms) + 2000
+            ms_list.append(last_ms)
+        # Convert ms into timestamp
         i = 0
         ts_list = []
         for ms_el in ms_list:
             ms_el = ms_list[i]
-            hr = ms_el // 3600000
-            ms_el = ms_el % 3600000
-            mi = ms_el // 60000
-            ms_el = ms_el % 60000
-            s = ms_el // 1000
-            ms_el = ms_el % 1000
-            ms = ms_el
+            hr = int(ms_el) // 3600000
+            ms_el = int(ms_el) % 3600000
+            mi = int(ms_el) // 60000
+            ms_el = int(ms_el) % 60000
+            s = int(ms_el) // 1000
+            ms_el = int(ms_el) % 1000
+            ms = int(ms_el)
             ts_el = '%02d:%02d:%02d.%03d' % (hr, mi, s, ms)
             ts_list.append(ts_el)
             i += 1
@@ -49,19 +83,33 @@ def parser(path_in, path_out):
             converted_ts.append(ts_el)
             start += 2
             end += 2
-        content_ls = re.findall('(<sync start=\d+><p class=\w+>(\s|\S){1,255}?<sync start=\d+>)'\
+        content_ls = re.findall('(<p class=\w+>(\s|\S){1,}?<sync)'\
         , smi_obj, flags=re.IGNORECASE)
-        j = 0
+        break_point = smi_obj.rfind("<P")
+        last_ct = smi_obj[break_point:]
+        last_ct = re.sub('</body>','', last_ct, flags=re.IGNORECASE)
+        last_ct = re.sub('</sami>','', last_ct, flags=re.IGNORECASE)
+        content_ls.append(last_ct)
+        qwe = 0
         converted_ct = []
-        while j < len(content_ls):
-            content_el = content_ls[j][0]
+        while qwe < len(content_ls):
+            if qwe == len(content_ls) - 1:
+                content_el = content_ls[qwe]
+            else:
+                content_el = content_ls[qwe][0]
             content_el = re.sub('\r\n', '', content_el)
             content_el = re.sub('\n', '', content_el)
             content_el = re.sub('<br>', '\n', content_el)
-            content_el = re.sub('<sync start=\d+>','', content_el, flags=re.IGNORECASE)
+            content_el = re.sub('&nbsp;', '', content_el, flags=re.IGNORECASE)
             content_el = re.sub('<p class=\w+>', '', content_el, flags=re.IGNORECASE)
+            content_el = re.sub('<sync','', content_el, flags=re.IGNORECASE)
             converted_ct.append(content_el)
-            j += 1
+            qwe += 1
+        converted_ct = list(filter(bool, converted_ct))
+        converted_ct = list(filter(lambda whitespace: whitespace.strip(), converted_ct))
+        if len(converted_ts) != len(converted_ct):
+            sys.stderr.write("The SAMI file has SYNC tag(s) with no actual caption!\nPlease check your SAMI file!\n")
+            return False
         que = 1
         num = 0
         final_obj = "WEBVTT\n\n"
@@ -79,8 +127,7 @@ def parser(path_in, path_out):
         if converted:
             converted.close()
             print("Successfully converted the subtitle!")
-    elif first_line[:2] == '1\n' or first_line[:2] == '1\r' \
-        or first_line[1:3] == '1\n' or first_line[1:3] == '1\r':
+    elif first_line[:5].find('1') != -1:
         srt_obj = sbt_obj
         # Convert the timestamp format
         org_ts = re.findall('(\d{0,2}?:\d{0,2}?:\d{0,2}?,)+', srt_obj)
@@ -89,7 +136,7 @@ def parser(path_in, path_out):
         for org in org_ts:
             org = org_ts[i]
             mod = mod_ts[i]
-            srt_obj = srt_obj.replace(org, mod)
+            srt_obj = re.sub(org, mod, srt_obj)
             i += 1
         # Add string "WEBVTT" at the top
         header = "WEBVTT\n\n"
@@ -102,4 +149,4 @@ def parser(path_in, path_out):
             converted.close()
             print("Successfully converted the subtitle!")
     else:
-        print("Not a valid SAMI or SubRip file!")
+        print("The file is either corrupted or not a valid SAMI or SubRip file!")
