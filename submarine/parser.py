@@ -7,7 +7,14 @@ import os
 import codecs
 import chardet # For non-unicode encoding detection
 
+
 def parser(path_in, path_out):
+    """
+    :param path_in: SAMI or SubRip style subtitle file path.
+    :param path_out: WEBVTT file path.
+    :return: True if process finished well, False otherwise.
+    """
+
     if not os.path.exists(path_in):
         sys.stderr.write('File does not exist! Please check the directory.\n')
         return False
@@ -150,3 +157,6 @@ def parser(path_in, path_out):
             print("Successfully converted the subtitle!")
     else:
         print("The file is either corrupted or not a valid SAMI or SubRip file!")
+        return False
+
+    return True
