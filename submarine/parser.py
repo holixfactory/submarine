@@ -6,6 +6,10 @@ import re
 import os
 import codecs
 import chardet # For non-unicode encoding detection
+import logging
+
+logger = logging.getLogger(__name__)
+logger.addHandler(logging.StreamHandler(sys.stderr))
 
 
 def parser(path_in, path_out):
@@ -16,7 +20,7 @@ def parser(path_in, path_out):
     """
 
     if not os.path.exists(path_in):
-        sys.stderr.write('File does not exist! Please check the directory.\n')
+        logger.error('File does not exist! Please check the directory.\n')
         return False
     file = open(path_in, "rb")
     chdt = chardet.detect(file.read())
@@ -115,7 +119,7 @@ def parser(path_in, path_out):
         converted_ct = list(filter(bool, converted_ct))
         converted_ct = list(filter(lambda whitespace: whitespace.strip(), converted_ct))
         if len(converted_ts) != len(converted_ct):
-            sys.stderr.write("The SAMI file has SYNC tag(s) with no actual caption!\nPlease check your SAMI file!\n")
+            logger.error("The SAMI file has SYNC tag(s) with no actual caption!\nPlease check your SAMI file!\n")
             return False
         que = 1
         num = 0
@@ -156,7 +160,7 @@ def parser(path_in, path_out):
             converted.close()
             print("Successfully converted the subtitle!")
     else:
-        print("The file is either corrupted or not a valid SAMI or SubRip file!")
+        logger.error("The file is either corrupted or not a valid SAMI or SubRip file!")
         return False
 
     return True
