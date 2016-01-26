@@ -14,7 +14,7 @@ setup(
     license='BSD',
     description='Python 2/3 compatible subtitle converter',
     long_description=open('README.rst').read(),
-    install_requires=[],
+    install_requires=['chardet>=2.2.1,<2.4'],
     classifiers=[
         "Development Status :: 5 - Production/Stable",
         "Environment :: Console",
