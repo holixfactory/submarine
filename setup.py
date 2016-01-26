@@ -5,7 +5,7 @@ setup(
     name='submarine',
     version=__version__,
     author='Jongho Lee',
-    author_email='jhlee@tntcrowd.com',
+    author_email='j.lee@columbia.edu',
     packages=['submarine'],
     keywords=['Subtitle', 'SAMI', 'SubRip', 'WEBVTT', 'Converter'],
     url='http://github.com/tntcrowd/submarine',
