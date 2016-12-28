@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 import sys
-from submarine.parser import parser
+from parser import parser
 
 # Usage
 usage = """
