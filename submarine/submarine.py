@@ -1,12 +1,12 @@
 #!/usr/bin/env python
 
 import sys
-from parser import parser
+from .parser import parser
 
 # Usage
 usage = """
-The Submarine Project. Copyright 2014 TNTcrowd Co., Ltd.\n
-This is a Python 2/3 compatible subtitle converter.
+The Submarine Project. Copyright 2014-2016 TNTcrowd Co., Ltd.\n
+This is a Python 3 subtitle converter.
 This module converts SAMI or SubRip files to a WEBVTT format.\n
 Usage (If path_to_file is empty, output directory will be the origin of source file):\n
 submarine file_name.srt path_to_file.vtt

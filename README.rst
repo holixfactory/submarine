@@ -2,13 +2,13 @@
 Submarine: Python Subtitle Converter
 ====================================
 
-* Python 2 / 3 compatible subtitle converter.
+* Python 3 subtitle converter.
 * Converts SAMI or SubRip style subtitles to a WEBVTT format.
 
 Requirements
 ------------
 
-* Python 2.7.x / 3.3.x or later (Will probably work on 2.6.x and 3.2.x)  
+* Python 3.3.x or later (Will probably work any 3.x.x)
 * chardet 2.2.1 or later
 
 Installation
@@ -32,7 +32,7 @@ If no path_to_file is given, output directory will be the origin of source file.
 License
 -------
 
-Copyright (c) 2014, TNTcrowd Co., Ltd.
+Copyright (c) 2014-2017, TNTcrowd Co., Ltd.
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without

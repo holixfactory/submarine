@@ -12,7 +12,7 @@ setup(
     platforms='Cross Platform',
     download_url='https://codeload.github.com/tntcrowd/submarine/legacy.tar.gz/master',
     license='BSD',
-    description='Python 2/3 compatible subtitle converter',
+    description='Python 3 subtitle converter',
     long_description=open('README.rst').read(),
     install_requires=['chardet>=2.2.1,<2.4'],
     classifiers=[
